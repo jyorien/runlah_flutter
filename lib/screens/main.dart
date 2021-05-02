@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'login_screen.dart';
 void main() {
   runApp(MyApp());
 }
@@ -10,22 +10,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'RunLah',
-      home: LoginScreen()
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('RunLah'),),
-      body:  SafeArea(child: Text("Just Run Lah!"),),
+      home: LoginScreen(),
+      theme: ThemeData(primaryColor: Colors.deepPurple, accentColor:Colors.green, bottomNavigationBarTheme: BottomNavigationBarThemeData()),
     );
   }
 }
 
 
-
-
-
+/*  BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today), label: "Today"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.directions_run), label: "Record"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard), label: "Dashboard")
+        ],
+      ),
+* */
