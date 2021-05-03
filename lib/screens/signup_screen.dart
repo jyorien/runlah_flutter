@@ -52,7 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: () async {
                 final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
                 if (newUser != null) {
-                  print(newUser);
+                  Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
                 }
               },
             ),

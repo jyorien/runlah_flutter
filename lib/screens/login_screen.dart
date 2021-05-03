@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:runlah_flutter/components/circular_material_button.dart';
 import 'package:runlah_flutter/constants.dart';
+import 'package:runlah_flutter/screens/BottomNavigationScreen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:runlah_flutter/screens/today_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const id = 'login';
@@ -55,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             CircularMaterialButton(text: 'Login',onPressed:() async {
               final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
               if (user != null) {
-                print(user);
+                Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
               }
 
             },),

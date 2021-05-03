@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:runlah_flutter/screens/BottomNavigationScreen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
+import 'package:runlah_flutter/screens/today_screen.dart';
 import 'login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -22,7 +24,9 @@ class MyApp extends StatelessWidget {
           bottomNavigationBarTheme: BottomNavigationBarThemeData()),
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
-        SignUpScreen.id: (context) => SignUpScreen()
+        SignUpScreen.id: (context) => SignUpScreen(),
+        TodayScreen.id: (context) => TodayScreen(),
+        BottomNavigationScreen.id: (context) => BottomNavigationScreen()
       },
     );
   }
