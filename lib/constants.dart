@@ -18,6 +18,6 @@ final kInputDecoration = InputDecoration(
 
 final kWelcomeTextStyle = TextStyle(fontSize: 50);
 
-final kRecordNumStyle = TextStyle(fontSize: 40);
+final kRecordNumStyle = TextStyle(fontSize: 30);
 final kRecordTextStyle = TextStyle(fontSize: 20);
 const double zoomLevel = 20;

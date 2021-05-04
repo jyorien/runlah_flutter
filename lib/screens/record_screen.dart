@@ -15,8 +15,12 @@ class _RecordScreenState extends State<RecordScreen> {
   GoogleMapController _controller;
   Position _currentPosition;
   Polyline _polyline;
+  List<double> _speedList = [];
   List<LatLng> _latLngList = [];
   Set<Polyline> _polylineSet = {};
+  String _currentSpeed = '0.00 m/s';
+  double _totalDistance = 0.00;
+  String _totalSteps = '0';
 
   String btnText = "START";
   bool _isStart = false;
@@ -89,7 +93,7 @@ class _RecordScreenState extends State<RecordScreen> {
                   Column(
                     children: [
                       Text(
-                        '0',
+                        _totalSteps,
                         style: kRecordNumStyle,
                       ),
                       Text(
@@ -100,13 +104,13 @@ class _RecordScreenState extends State<RecordScreen> {
                   ),
                   Column(
                     children: [
-                      Text('0 km', style: kRecordNumStyle),
+                      Text("${(_totalDistance/1000).toStringAsFixed(2)} km", style: kRecordNumStyle),
                       Text('Distance', style: kRecordTextStyle),
                     ],
                   ),
                   Column(
                     children: [
-                      Text('0 km/h', style: kRecordNumStyle),
+                      Text(_currentSpeed, style: kRecordNumStyle),
                       Text('Speed', style: kRecordTextStyle),
                     ],
                   ),
@@ -126,14 +130,6 @@ class _RecordScreenState extends State<RecordScreen> {
               polylines: _polylineSet,
               onMapCreated: (GoogleMapController controller) {
                 _controller = controller;
-                setState(() {
-                  _polyline = Polyline(
-                      polylineId: PolylineId(
-                        'p1',
-                      ),
-                      color: Colors.blue);
-                  _polylineSet.add(_polyline);
-                });
               },
             ),
             Container(
@@ -152,9 +148,14 @@ class _RecordScreenState extends State<RecordScreen> {
                           _currentPosition.longitude);
                       final newLatLng = LatLng(event.latitude, event.longitude);
                       _latLngList.add(newLatLng);
+                      _speedList.add(event.speed);
                       setState(() {
+                        _totalDistance+= Geolocator.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
+                        _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
                         Polyline _newLine = Polyline(
-                            polylineId: PolylineId(event.timestamp.toString()),color: Colors.blue, points: _latLngList);
+                            polylineId: PolylineId(event.timestamp.toString()),
+                            color: Colors.blue,
+                            points: _latLngList);
                         _polylineSet.add(_newLine);
                         _currentPosition = event;
                         _controller.animateCamera(
