@@ -14,6 +14,10 @@ class RecordScreen extends StatefulWidget {
 class _RecordScreenState extends State<RecordScreen> {
   GoogleMapController _controller;
   Position _currentPosition;
+  Polyline _polyline;
+  List<LatLng> _latLngList = [];
+  Set<Polyline> _polylineSet = {};
+
   String btnText = "START";
   bool _isStart = false;
   StreamSubscription<Position> _positionStream;
@@ -61,9 +65,10 @@ class _RecordScreenState extends State<RecordScreen> {
     }
     _currentPosition = await Geolocator.getCurrentPosition();
     print(_currentPosition);
-    _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
-        zoom: zoomLevel)));
+    final currentLatLng =
+        LatLng(_currentPosition.latitude, _currentPosition.longitude);
+    _controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: currentLatLng, zoom: zoomLevel)));
   }
 
   @override
@@ -118,8 +123,17 @@ class _RecordScreenState extends State<RecordScreen> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
+              polylines: _polylineSet,
               onMapCreated: (GoogleMapController controller) {
                 _controller = controller;
+                setState(() {
+                  _polyline = Polyline(
+                      polylineId: PolylineId(
+                        'p1',
+                      ),
+                      color: Colors.blue);
+                  _polylineSet.add(_polyline);
+                });
               },
             ),
             Container(
@@ -133,15 +147,22 @@ class _RecordScreenState extends State<RecordScreen> {
                     });
                     _positionStream =
                         Geolocator.getPositionStream().listen((event) {
-                      print("${event.latitude}, ${event.longitude}");
-                      _controller.animateCamera(
-                        CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                            target: LatLng(event.latitude, event.longitude),
-                            zoom: zoomLevel
+                      // subscribe to location updates
+                      final currentLatLng = LatLng(_currentPosition.latitude,
+                          _currentPosition.longitude);
+                      final newLatLng = LatLng(event.latitude, event.longitude);
+                      _latLngList.add(newLatLng);
+                      setState(() {
+                        Polyline _newLine = Polyline(
+                            polylineId: PolylineId(event.timestamp.toString()),color: Colors.blue, points: _latLngList);
+                        _polylineSet.add(_newLine);
+                        _currentPosition = event;
+                        _controller.animateCamera(
+                          CameraUpdate.newCameraPosition(
+                            CameraPosition(target: newLatLng, zoom: zoomLevel),
                           ),
-                        ),
-                      );
+                        );
+                      });
                     });
                   } else {
                     _isStart = false;
@@ -149,7 +170,6 @@ class _RecordScreenState extends State<RecordScreen> {
                     setState(() {
                       btnText = 'START';
                     });
-
                   }
                 },
                 child: Text(

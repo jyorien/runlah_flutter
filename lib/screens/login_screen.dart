@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20,),
             CircularMaterialButton(text: 'Login',onPressed:() async {
               try {
-                final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
+                final user = await _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
                 if (user != null) {
                   Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
                 }
