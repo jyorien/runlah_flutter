@@ -40,12 +40,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           });
         },
       ),
-      body: PageView(
-        controller: _pageController,
-        children: [TodayScreen(), RecordScreen(), DashboardScreen()],
-        onPageChanged: (index) {
-          _currentIndex = index;
-        },
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          children: [TodayScreen(), RecordScreen(), DashboardScreen()],
+          onPageChanged: (index) {
+            _currentIndex = index;
+          },
+        ),
       ),
     );
   }

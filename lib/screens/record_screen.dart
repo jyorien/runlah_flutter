@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pedometer/pedometer.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -20,23 +22,34 @@ class _RecordScreenState extends State<RecordScreen> {
   Set<Polyline> _polylineSet = {};
   String _currentSpeed = '0.00 m/s';
   double _totalDistance = 0.00;
-  String _totalSteps = '0';
+
+  int _totalStepCount = 0;
+  int _startStepCount = 0;
+  int _sessionStepCount = 0;
 
   String btnText = "START";
   bool _isStart = false;
   StreamSubscription<Position> _positionStream;
 
   @override
+  void dispose() {
+    if (_positionStream != null)  _positionStream.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
-    _requestPermissions();
+    _requestLocationPermissions();
+    _requestActivityPermission();
+
   }
 
   /// Determine the current position of the device.
   ///
   /// When the location services are not enabled or permissions
   /// are denied the `Future` will return an error.
-  void _requestPermissions() async {
+  void _requestLocationPermissions() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -73,6 +86,59 @@ class _RecordScreenState extends State<RecordScreen> {
         LatLng(_currentPosition.latitude, _currentPosition.longitude);
     _controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: currentLatLng, zoom: zoomLevel)));
+    initPositionStream();
+  }
+
+  void _requestActivityPermission() async {
+    var status = await Permission.activityRecognition.status;
+    if (status.isDenied || status.isPermanentlyDenied) {
+      Permission.activityRecognition.request();
+    }
+    if (status.isGranted) initStepStream();
+  }
+
+  void initStepStream() async {
+    Stream<StepCount> _stepCountStream = await Pedometer.stepCountStream;
+    _stepCountStream.listen(onStepCount).onError(onStepCountError);
+  }
+  void initPositionStream() {
+    _positionStream =
+        Geolocator.getPositionStream().listen((event) {
+          // subscribe to location updates
+          final currentLatLng = LatLng(_currentPosition.latitude,
+              _currentPosition.longitude);
+          final newLatLng = LatLng(event.latitude, event.longitude);
+          if (_isStart) {
+            _latLngList.add(newLatLng);
+            _speedList.add(event.speed);
+            setState(() {
+              _totalDistance+= Geolocator.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
+              _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
+              Polyline _newLine = Polyline(
+                  polylineId: PolylineId(event.timestamp.toString()),
+                  color: Colors.blue,
+                  points: _latLngList);
+              _polylineSet.add(_newLine);
+            });
+          }
+          _controller.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(target: newLatLng, zoom: zoomLevel),
+            ),
+          );
+          _currentPosition = event;
+        });
+  }
+  void onStepCount(StepCount event) {
+    print("steps: ${event.steps}");
+    _totalStepCount = event.steps;
+    if (_isStart)
+      setState(() {
+        _sessionStepCount = _totalStepCount - _startStepCount;
+      });
+  }
+  void onStepCountError(error) {
+    print(error);
   }
 
   @override
@@ -93,7 +159,7 @@ class _RecordScreenState extends State<RecordScreen> {
                   Column(
                     children: [
                       Text(
-                        _totalSteps,
+                        _sessionStepCount.toString(),
                         style: kRecordNumStyle,
                       ),
                       Text(
@@ -127,6 +193,7 @@ class _RecordScreenState extends State<RecordScreen> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
+
               polylines: _polylineSet,
               onMapCreated: (GoogleMapController controller) {
                 _controller = controller;
@@ -138,32 +205,9 @@ class _RecordScreenState extends State<RecordScreen> {
                 onPressed: () {
                   if (!_isStart) {
                     _isStart = true;
+                    _startStepCount = _totalStepCount;
                     setState(() {
                       btnText = 'STOP';
-                    });
-                    _positionStream =
-                        Geolocator.getPositionStream().listen((event) {
-                      // subscribe to location updates
-                      final currentLatLng = LatLng(_currentPosition.latitude,
-                          _currentPosition.longitude);
-                      final newLatLng = LatLng(event.latitude, event.longitude);
-                      _latLngList.add(newLatLng);
-                      _speedList.add(event.speed);
-                      setState(() {
-                        _totalDistance+= Geolocator.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
-                        _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
-                        Polyline _newLine = Polyline(
-                            polylineId: PolylineId(event.timestamp.toString()),
-                            color: Colors.blue,
-                            points: _latLngList);
-                        _polylineSet.add(_newLine);
-                        _currentPosition = event;
-                        _controller.animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(target: newLatLng, zoom: zoomLevel),
-                          ),
-                        );
-                      });
                     });
                   } else {
                     _isStart = false;

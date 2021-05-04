@@ -2,6 +2,7 @@
     package="com.example.runlah_flutter">
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
    <application
         android:label="runlah_flutter"
         android:icon="@mipmap/ic_launcher">
