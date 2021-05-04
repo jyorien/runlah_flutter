@@ -55,9 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 20,),
             CircularMaterialButton(text: 'Login',onPressed:() async {
-              final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
-              if (user != null) {
-                Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
+              try {
+                final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
+                if (user != null) {
+                  Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
+                }
+              } catch (e) {
+                final snackBar = SnackBar(content: Text(e.toString()),);
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
 
             },),

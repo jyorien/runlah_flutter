@@ -50,9 +50,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
             CircularMaterialButton(
               text: 'Sign Up',
               onPressed: () async {
-                final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-                if (newUser != null) {
-                  Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
+                try {
+                  final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+                  if (newUser != null) {
+                    Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
+                  }
+                }  catch (e) {
+                  final snackBar = SnackBar(content: Text(e.toString()));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
                 }
               },
             ),
