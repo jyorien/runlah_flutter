@@ -16,7 +16,6 @@ class RecordScreen extends StatefulWidget {
 class _RecordScreenState extends State<RecordScreen> {
   GoogleMapController _controller;
   Position _currentPosition;
-  Polyline _polyline;
   List<double> _speedList = [];
   List<LatLng> _latLngList = [];
   Set<Polyline> _polylineSet = {};
@@ -31,9 +30,13 @@ class _RecordScreenState extends State<RecordScreen> {
   bool _isStart = false;
   StreamSubscription<Position> _positionStream;
 
+  Timer _timer;
+  Stopwatch _stopwatch;
+
   @override
   void dispose() {
-    if (_positionStream != null)  _positionStream.cancel();
+    if (_positionStream != null) _positionStream.cancel();
+    if (_timer != null) _timer.cancel();
     super.dispose();
   }
 
@@ -42,7 +45,7 @@ class _RecordScreenState extends State<RecordScreen> {
     super.initState();
     _requestLocationPermissions();
     _requestActivityPermission();
-
+    initTimerAndStopwatch();
   }
 
   /// Determine the current position of the device.
@@ -97,38 +100,56 @@ class _RecordScreenState extends State<RecordScreen> {
     if (status.isGranted) initStepStream();
   }
 
+  void initTimerAndStopwatch() {
+    _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
+      setState(() {});
+    });
+    _stopwatch = Stopwatch();
+  }
+
+  String formatTime(int milliseconds) {
+    if (milliseconds == null || milliseconds == 0) {
+      return "00:00";
+    }
+    var minutes = (milliseconds/60000).round().toString().padLeft(2, '0');
+    var seconds = ((milliseconds/1000)%60).round().toString().padLeft(2,'0');
+
+    return "$minutes:$seconds";
+  }
   void initStepStream() async {
     Stream<StepCount> _stepCountStream = await Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
+
   void initPositionStream() {
-    _positionStream =
-        Geolocator.getPositionStream().listen((event) {
-          // subscribe to location updates
-          final currentLatLng = LatLng(_currentPosition.latitude,
-              _currentPosition.longitude);
-          final newLatLng = LatLng(event.latitude, event.longitude);
-          if (_isStart) {
-            _latLngList.add(newLatLng);
-            _speedList.add(event.speed);
-            setState(() {
-              _totalDistance+= Geolocator.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
-              _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
-              Polyline _newLine = Polyline(
-                  polylineId: PolylineId(event.timestamp.toString()),
-                  color: Colors.blue,
-                  points: _latLngList);
-              _polylineSet.add(_newLine);
-            });
-          }
-          _controller.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(target: newLatLng, zoom: zoomLevel),
-            ),
-          );
-          _currentPosition = event;
+    _positionStream = Geolocator.getPositionStream().listen((event) {
+      // subscribe to location updates
+      final currentLatLng =
+          LatLng(_currentPosition.latitude, _currentPosition.longitude);
+      final newLatLng = LatLng(event.latitude, event.longitude);
+      if (_isStart) {
+        _latLngList.add(newLatLng);
+        _speedList.add(event.speed);
+        setState(() {
+          _totalDistance += Geolocator.distanceBetween(currentLatLng.latitude,
+              currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
+          _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
+          Polyline _newLine = Polyline(
+              polylineId: PolylineId(event.timestamp.toString()),
+              color: Colors.blue,
+              points: _latLngList);
+          _polylineSet.add(_newLine);
         });
+      }
+      _controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: newLatLng, zoom: zoomLevel),
+        ),
+      );
+      _currentPosition = event;
+    });
   }
+
   void onStepCount(StepCount event) {
     print("steps: ${event.steps}");
     _totalStepCount = event.steps;
@@ -137,6 +158,7 @@ class _RecordScreenState extends State<RecordScreen> {
         _sessionStepCount = _totalStepCount - _startStepCount;
       });
   }
+
   void onStepCountError(error) {
     print(error);
   }
@@ -150,7 +172,7 @@ class _RecordScreenState extends State<RecordScreen> {
           child: Column(
             children: [
               Text(
-                '00:00',
+                formatTime(_stopwatch.elapsedMilliseconds),
                 style: TextStyle(fontSize: 70),
               ),
               Row(
@@ -170,7 +192,8 @@ class _RecordScreenState extends State<RecordScreen> {
                   ),
                   Column(
                     children: [
-                      Text("${(_totalDistance/1000).toStringAsFixed(2)} km", style: kRecordNumStyle),
+                      Text("${(_totalDistance / 1000).toStringAsFixed(2)} km",
+                          style: kRecordNumStyle),
                       Text('Distance', style: kRecordTextStyle),
                     ],
                   ),
@@ -193,7 +216,6 @@ class _RecordScreenState extends State<RecordScreen> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
-
               polylines: _polylineSet,
               onMapCreated: (GoogleMapController controller) {
                 _controller = controller;
@@ -208,14 +230,19 @@ class _RecordScreenState extends State<RecordScreen> {
                     _startStepCount = _totalStepCount;
                     setState(() {
                       btnText = 'STOP';
+                      _stopwatch.start();
                     });
                   } else {
                     _isStart = false;
                     _positionStream.cancel();
                     setState(() {
                       btnText = 'START';
+                      _stopwatch.stop();
                     });
                   }
+                  setState(() {
+
+                  });
                 },
                 child: Text(
                   btnText,
