@@ -21,7 +21,7 @@ class _RecordScreenState extends State<RecordScreen> {
   List<double> _speedList = [];
   List<LatLng> _latLngList = [];
   Set<Polyline> _polylineSet = {};
-  String _currentSpeed = '0.00 m/s';
+  String _currentSpeed = "0.00";
   double _totalDistance = 0.00;
 
   int _totalStepCount = 0;
@@ -136,7 +136,7 @@ class _RecordScreenState extends State<RecordScreen> {
         setState(() {
           _totalDistance += Geolocator.distanceBetween(currentLatLng.latitude,
               currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
-          _currentSpeed = "${event.speed.toStringAsFixed(2)} m/s";
+          _currentSpeed = event.speed.toStringAsFixed(2);
           Polyline _newLine = Polyline(
               polylineId: PolylineId(event.timestamp.toString()),
               color: Colors.blue,
@@ -185,7 +185,7 @@ class _RecordScreenState extends State<RecordScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 10),
-          child: RecordStats(timeTaken: formatTime(_stopwatch.elapsedMilliseconds), averageSpeed: _currentSpeed, stepCount: _sessionStepCount.toString(), sessionDistance: "${(_totalDistance / 1000).toStringAsFixed(2)} km", ),
+          child: RecordStats(timeTaken: formatTime(_stopwatch.elapsedMilliseconds), averageSpeed: _currentSpeed, stepCount: _sessionStepCount.toString(), sessionDistance: (_totalDistance / 1000).toStringAsFixed(2), ),
         ),
         Expanded(
           child: Stack(children: [

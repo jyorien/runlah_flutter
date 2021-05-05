@@ -9,8 +9,10 @@ class RecordStats extends StatelessWidget {
   final String sessionDistance;
 
   RecordStats(
-      {this.timeTaken, this.stepCount, this.averageSpeed, this.sessionDistance});
-
+      {this.timeTaken,
+      this.stepCount,
+      this.averageSpeed,
+      this.sessionDistance});
 
   @override
   Widget build(BuildContext context) {
@@ -23,34 +25,33 @@ class RecordStats extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-        Column(
-        children: [
-        Text(
-        stepCount,
-          style: kRecordNumStyle,
-        ),
-        Text(
-          'Steps',
-          style: kRecordTextStyle,
+            Column(
+              children: [
+                Text(
+                  stepCount,
+                  style: kRecordNumStyle,
+                ),
+                Text(
+                  'Steps',
+                  style: kRecordTextStyle,
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Text("$sessionDistance km", style: kRecordNumStyle),
+                Text('Distance', style: kRecordTextStyle),
+              ],
+            ),
+            Column(
+              children: [
+                Text("$averageSpeed m/s", style: kRecordNumStyle),
+                Text('Speed', style: kRecordTextStyle),
+              ],
+            ),
+          ],
         ),
       ],
-    ),
-    Column(
-    children: [
-    Text(sessionDistance,
-    style: kRecordNumStyle),
-    Text('Distance', style: kRecordTextStyle),
-    ],
-    ),
-    Column(
-    children: [
-    Text(averageSpeed, style: kRecordNumStyle),
-    Text('Speed', style: kRecordTextStyle),
-    ],
-    ),
-    ],
-    ),
-    ],
     );
   }
 }

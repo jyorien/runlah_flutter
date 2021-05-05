@@ -22,9 +22,7 @@ final kRecordNumStyle = TextStyle(fontSize: 30);
 final kRecordTextStyle = TextStyle(fontSize: 20);
 const double zoomLevel = 20;
 
-String formatDistance(double distance) {
-  return "${distance.toStringAsFixed(2)} km";
-}
-String formatSpeed(double speed) {
-  return "${speed.toStringAsFixed(2)} m/s";
-}
+String formatDistance(double distance) => distance.toStringAsFixed(2);
+
+String formatSpeed(double speed) => speed.toStringAsFixed(2);
+

@@ -44,9 +44,9 @@ class _ResultScreenState extends State<ResultScreen> {
               mapType: MapType.normal,
               markers: {
                 Marker(
-                    markerId: MarkerId("marker1"), position: latLngList.first),
+                    markerId: MarkerId("start"), position: latLngList.first),
                 Marker(
-                    markerId: MarkerId("marker2"), position: latLngList.last),
+                    markerId: MarkerId("end"), position: latLngList.last),
               },
               polylines: {Polyline(polylineId: PolylineId("record_line"),points: latLngList, color: Colors.blue)},
             ),
