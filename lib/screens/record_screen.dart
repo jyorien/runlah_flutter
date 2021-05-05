@@ -175,6 +175,11 @@ class _RecordScreenState extends State<RecordScreen> {
     averageSpeed = averageSpeed / _speedList.length;
     // convert to km
     _totalDistance = _totalDistance/1000;
+    if (_latLngList.isEmpty) {
+      // make sure the list has at least 1 element
+      _latLngList.add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
+    }
+    print(_latLngList.toString());
     Navigator.push(context, MaterialPageRoute(builder: (context) => ResultScreen(latLngList: _latLngList, timeTaken: formatTime(_stopwatch.elapsedMilliseconds), sessionDistance: formatDistance(_totalDistance), stepCount: _sessionStepCount.toString(), averageSpeed: formatSpeed(averageSpeed), )));
   }
 
