@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:runlah_flutter/screens/result_screen.dart';
 
 class RecordScreen extends StatefulWidget {
   @override
@@ -121,6 +123,7 @@ class _RecordScreenState extends State<RecordScreen> {
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
 
+
   void initPositionStream() {
     _positionStream = Geolocator.getPositionStream().listen((event) {
       // subscribe to location updates
@@ -163,50 +166,26 @@ class _RecordScreenState extends State<RecordScreen> {
     print(error);
   }
 
+  void passData() {
+    // calculate avg speed
+    double averageSpeed = 0.0;
+    _speedList.forEach((element) {
+      averageSpeed += element;
+    });
+    averageSpeed = averageSpeed / _speedList.length;
+    // convert to km
+    _totalDistance = _totalDistance/1000;
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ResultScreen(latLngList: _latLngList, timeTaken: formatTime(_stopwatch.elapsedMilliseconds), sessionDistance: formatDistance(_totalDistance), stepCount: _sessionStepCount.toString(), averageSpeed: formatSpeed(averageSpeed), )));
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 10),
-          child: Column(
-            children: [
-              Text(
-                formatTime(_stopwatch.elapsedMilliseconds),
-                style: TextStyle(fontSize: 70),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        _sessionStepCount.toString(),
-                        style: kRecordNumStyle,
-                      ),
-                      Text(
-                        'Steps',
-                        style: kRecordTextStyle,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("${(_totalDistance / 1000).toStringAsFixed(2)} km",
-                          style: kRecordNumStyle),
-                      Text('Distance', style: kRecordTextStyle),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text(_currentSpeed, style: kRecordNumStyle),
-                      Text('Speed', style: kRecordTextStyle),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: RecordStats(timeTaken: formatTime(_stopwatch.elapsedMilliseconds), averageSpeed: _currentSpeed, stepCount: _sessionStepCount.toString(), sessionDistance: "${(_totalDistance / 1000).toStringAsFixed(2)} km", ),
         ),
         Expanded(
           child: Stack(children: [
@@ -239,6 +218,7 @@ class _RecordScreenState extends State<RecordScreen> {
                       btnText = 'START';
                       _stopwatch.stop();
                     });
+                    passData();
                   }
                   setState(() {
 

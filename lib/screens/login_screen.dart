@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:runlah_flutter/components/circular_material_button.dart';
 import 'package:runlah_flutter/constants.dart';
-import 'package:runlah_flutter/screens/BottomNavigationScreen.dart';
+import 'package:runlah_flutter/screens/bottmnav_screen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';

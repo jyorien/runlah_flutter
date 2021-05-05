@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:runlah_flutter/screens/BottomNavigationScreen.dart';
+import 'package:runlah_flutter/screens/bottmnav_screen.dart';
+import 'package:runlah_flutter/screens/result_screen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:runlah_flutter/screens/today_screen.dart';
 import 'login_screen.dart';
@@ -26,20 +27,10 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         SignUpScreen.id: (context) => SignUpScreen(),
         TodayScreen.id: (context) => TodayScreen(),
-        BottomNavigationScreen.id: (context) => BottomNavigationScreen()
+        BottomNavigationScreen.id: (context) => BottomNavigationScreen(),
+        ResultScreen.id: (context) => ResultScreen()
       },
     );
   }
 }
 
-/*  BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today), label: "Today"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.directions_run), label: "Record"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: "Dashboard")
-        ],
-      ),
-* */
