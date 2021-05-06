@@ -113,16 +113,17 @@ class _RecordScreenState extends State<RecordScreen> {
     if (milliseconds == null || milliseconds == 0) {
       return "00:00";
     }
-    var minutes = (milliseconds/60000).round().toString().padLeft(2, '0');
-    var seconds = ((milliseconds/1000)%60).round().toString().padLeft(2,'0');
+    var minutes = (milliseconds / 60000).round().toString().padLeft(2, '0');
+    var seconds =
+        ((milliseconds / 1000) % 60).round().toString().padLeft(2, '0');
 
     return "$minutes:$seconds";
   }
+
   void initStepStream() async {
     Stream<StepCount> _stepCountStream = await Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
-
 
   void initPositionStream() {
     _positionStream = Geolocator.getPositionStream().listen((event) {
@@ -173,16 +174,24 @@ class _RecordScreenState extends State<RecordScreen> {
       averageSpeed += element;
     });
     averageSpeed = averageSpeed / _speedList.length;
-    // convert to km
-    _totalDistance = _totalDistance/1000;
+
     if (_latLngList.isEmpty) {
       // make sure the list has at least 1 element
-      _latLngList.add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
+      _latLngList
+          .add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
     }
     print(_latLngList.toString());
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ResultScreen(latLngList: _latLngList, timeTaken: formatTime(_stopwatch.elapsedMilliseconds), sessionDistance: formatDistance(_totalDistance), stepCount: _sessionStepCount.toString(), averageSpeed: formatSpeed(averageSpeed), )));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ResultScreen(
+                  latLngList: _latLngList,
+                  timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
+                  sessionDistance: _totalDistance,
+                  stepCount: _sessionStepCount,
+                  averageSpeed: averageSpeed,
+                )));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +199,12 @@ class _RecordScreenState extends State<RecordScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 10),
-          child: RecordStats(timeTaken: formatTime(_stopwatch.elapsedMilliseconds), averageSpeed: _currentSpeed, stepCount: _sessionStepCount.toString(), sessionDistance: (_totalDistance / 1000).toStringAsFixed(2), ),
+          child: RecordStats(
+            timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
+            averageSpeed: _currentSpeed,
+            stepCount: _sessionStepCount.toString(),
+            sessionDistance: (_totalDistance / 1000).toStringAsFixed(2),
+          ),
         ),
         Expanded(
           child: Stack(children: [
@@ -218,16 +232,13 @@ class _RecordScreenState extends State<RecordScreen> {
                     });
                   } else {
                     _isStart = false;
-                    _positionStream.cancel();
                     setState(() {
                       btnText = 'START';
                       _stopwatch.stop();
                     });
                     passData();
                   }
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 child: Text(
                   btnText,
