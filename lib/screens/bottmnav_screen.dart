@@ -13,7 +13,6 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
   List<Widget> tabs = [TodayScreen(), RecordScreen(), DashboardScreen()];
-  PageController _pageController = PageController();
 
 
   @override
@@ -36,17 +35,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         ],
         onTap: (index) {
           setState(() {
-            _pageController.jumpToPage(index);
+            _currentIndex = index;
           });
         },
       ),
       body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          children: [TodayScreen(), RecordScreen(), DashboardScreen()],
-          onPageChanged: (index) {
-            _currentIndex = index;
-          },
+        child: Container(
+          child: tabs[_currentIndex],
+
         ),
       ),
     );
