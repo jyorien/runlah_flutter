@@ -16,6 +16,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   var dataList = [];
 
+  String formatMinutes(String minute) {
+    var min = minute;
+    if (int.parse(minute) < 10) min = "0$minute";
+    return min;
+  }
   void getData() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -69,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   var hour = DateFormat.H().format(date);
                   var minute = DateFormat.m().format(date);
                   var displayDate =
-                      "$dayOfMonth $monthName $year $hour:$minute";
+                      "$dayOfMonth $monthName $year $hour:${formatMinutes(minute)}";
                   // convert to map so it is iterable
                   Map<String, dynamic> map = {};
                   var givenList = currentIndex["coordinatesArray"];
@@ -80,7 +85,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       index+=1;
                     });
                   } else map = Map<String, dynamic>.from(givenList);
-                  print("map $map");
                   List<LatLng> listLatLng = [];
                   // get the latitude and longitude from the map to format into list of LatLng
                   map.forEach((key, value) {
