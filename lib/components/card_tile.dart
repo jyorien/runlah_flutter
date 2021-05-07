@@ -12,7 +12,7 @@ class CardTile extends StatelessWidget {
   List<LatLng> listLatLng;
 
   CardTile(
-      {this.dateTime, this.sessionDistance, this.timeTaken, this.averageSpeed, this.stepCount, this.listLatLng});
+      {this.dateTime = "", this.sessionDistance = "", this.timeTaken = "", this.averageSpeed = "", this.stepCount = "", this.listLatLng});
 
 @override
   Widget build(BuildContext context) {
