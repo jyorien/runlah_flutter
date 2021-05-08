@@ -106,23 +106,17 @@ class _RecordScreenState extends State<RecordScreen> {
     if (activityPermissionStatus.isGranted) {
       initStepStream();
       requestLocationPermission();
-      print("activity granted");
     }
 
   }
   void requestLocationPermission() async {
-    if (await Permission.location.serviceStatus.isEnabled) {
-      initMap();
-      initPositionStream();
-
-
-    } else {
       if (await Permission.location.request().isGranted) {
         initMap();
+        print("INIT MAP 1");
         initPositionStream();
 
       }
-    }
+
   }
   void initMap() {
     setState(() {
@@ -150,6 +144,17 @@ class _RecordScreenState extends State<RecordScreen> {
   void initStepStream() async {
     Stream<StepCount> _stepCountStream = await Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
+  }
+
+  String formatTime(int milliseconds) {
+    if (milliseconds == null || milliseconds == 0) {
+      return "00:00";
+    }
+    var minutes = (milliseconds / 60000).round().toString().padLeft(2, '0');
+    var seconds =
+        ((milliseconds / 1000) % 60).round().toString().padLeft(2, '0');
+
+    return "$minutes:$seconds";
   }
 
   void initPositionStream() async {
@@ -186,17 +191,6 @@ class _RecordScreenState extends State<RecordScreen> {
       );
       _currentPosition = event;
     });
-  }
-
-  String formatTime(int milliseconds) {
-    if (milliseconds == null || milliseconds == 0) {
-      return "00:00";
-    }
-    var minutes = (milliseconds / 60000).round().toString().padLeft(2, '0');
-    var seconds =
-        ((milliseconds / 1000) % 60).round().toString().padLeft(2, '0');
-
-    return "$minutes:$seconds";
   }
 
   void onStepCount(StepCount event) {
