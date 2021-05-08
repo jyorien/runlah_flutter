@@ -16,6 +16,7 @@ class RecordScreen extends StatefulWidget {
 }
 
 class _RecordScreenState extends State<RecordScreen> {
+  Widget googleMap = Container();
   GoogleMapController _controller;
   Position _currentPosition;
   List<double> _speedList = [];
@@ -44,9 +45,9 @@ class _RecordScreenState extends State<RecordScreen> {
 
   @override
   void initState() {
-    super.initState();
-    _requestLocationPermissions();
     _requestActivityPermission();
+    super.initState();
+    // _requestLocationPermissions();
     initTimerAndStopwatch();
   }
 
@@ -54,52 +55,89 @@ class _RecordScreenState extends State<RecordScreen> {
   ///
   /// When the location services are not enabled or permissions
   /// are denied the `Future` will return an error.
-  void _requestLocationPermissions() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    _currentPosition = await Geolocator.getCurrentPosition();
-    print(_currentPosition);
-    final currentLatLng =
-        LatLng(_currentPosition.latitude, _currentPosition.longitude);
-    _controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: currentLatLng, zoom: zoomLevel)));
-    initPositionStream();
-  }
+  // void _requestLocationPermissions() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+  //
+  //   // Test if location services are enabled.
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     // Location services are not enabled don't continue
+  //     // accessing the position and request users of the
+  //     // App to enable the location services.
+  //     return Future.error('Location services are disabled.');
+  //   }
+  //
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       // Permissions are denied, next time you could try
+  //       // requesting permissions again (this is also where
+  //       // Android's shouldShowRequestPermissionRationale
+  //       // returned true. According to Android guidelines
+  //       // your App should show an explanatory UI now.
+  //       return Future.error('Location permissions are denied');
+  //     }
+  //   }
+  //
+  //   if (permission == LocationPermission.deniedForever) {
+  //     // Permissions are denied forever, handle appropriately.
+  //     return Future.error(
+  //         'Location permissions are permanently denied, we cannot request permissions.');
+  //   }
+  //   _currentPosition = await Geolocator.getCurrentPosition();
+  //   print(_currentPosition);
+  //   final currentLatLng =
+  //       LatLng(_currentPosition.latitude, _currentPosition.longitude);
+  //   _controller.animateCamera(CameraUpdate.newCameraPosition(
+  //       CameraPosition(target: currentLatLng, zoom: zoomLevel)));
+  //   initPositionStream();
+  // }
 
   void _requestActivityPermission() async {
-    var status = await Permission.activityRecognition.status;
-    if (status.isDenied || status.isPermanentlyDenied) {
-      Permission.activityRecognition.request();
+    var activityPermissionStatus = await Permission.activityRecognition.status;
+    if (activityPermissionStatus.isDenied || activityPermissionStatus.isPermanentlyDenied) {
+     if (await Permission.activityRecognition.request().isGranted) {
+       requestLocationPermission();
+     }
+
     }
-    if (status.isGranted) initStepStream();
+    if (activityPermissionStatus.isGranted) {
+      initStepStream();
+      requestLocationPermission();
+      print("activity granted");
+    }
+
+  }
+  void requestLocationPermission() async {
+    if (await Permission.location.serviceStatus.isEnabled) {
+      initMap();
+      initPositionStream();
+
+
+    } else {
+      if (await Permission.location.request().isGranted) {
+        initMap();
+        initPositionStream();
+
+      }
+    }
+  }
+  void initMap() {
+    setState(() {
+      googleMap = GoogleMap(
+        initialCameraPosition:
+        CameraPosition(target: LatLng(1.3521, 103.8198), zoom: 7),
+        mapType: MapType.normal,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+        polylines: _polylineSet,
+        onMapCreated: (GoogleMapController controller) {
+          _controller = controller;
+        },
+      );
+    });
   }
 
   void initTimerAndStopwatch() {
@@ -109,23 +147,19 @@ class _RecordScreenState extends State<RecordScreen> {
     _stopwatch = Stopwatch();
   }
 
-  String formatTime(int milliseconds) {
-    if (milliseconds == null || milliseconds == 0) {
-      return "00:00";
-    }
-    var minutes = (milliseconds / 60000).round().toString().padLeft(2, '0');
-    var seconds =
-        ((milliseconds / 1000) % 60).round().toString().padLeft(2, '0');
-
-    return "$minutes:$seconds";
-  }
-
   void initStepStream() async {
     Stream<StepCount> _stepCountStream = await Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
 
-  void initPositionStream() {
+  void initPositionStream() async {
+    _currentPosition = await Geolocator.getCurrentPosition();
+    print(_currentPosition);
+    final currentLatLng =
+    LatLng(_currentPosition.latitude, _currentPosition.longitude);
+    _controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: currentLatLng, zoom: zoomLevel)));
+
     _positionStream = Geolocator.getPositionStream().listen((event) {
       // subscribe to location updates
       final currentLatLng =
@@ -152,6 +186,17 @@ class _RecordScreenState extends State<RecordScreen> {
       );
       _currentPosition = event;
     });
+  }
+
+  String formatTime(int milliseconds) {
+    if (milliseconds == null || milliseconds == 0) {
+      return "00:00";
+    }
+    var minutes = (milliseconds / 60000).round().toString().padLeft(2, '0');
+    var seconds =
+        ((milliseconds / 1000) % 60).round().toString().padLeft(2, '0');
+
+    return "$minutes:$seconds";
   }
 
   void onStepCount(StepCount event) {
@@ -208,17 +253,7 @@ class _RecordScreenState extends State<RecordScreen> {
         ),
         Expanded(
           child: Stack(children: [
-            GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: LatLng(1.3521, 103.8198), zoom: 7),
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              polylines: _polylineSet,
-              onMapCreated: (GoogleMapController controller) {
-                _controller = controller;
-              },
-            ),
+            googleMap,
             Container(
               alignment: Alignment.bottomCenter,
               child: MaterialButton(
