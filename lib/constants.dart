@@ -18,6 +18,8 @@ final kWelcomeTextStyle = TextStyle(fontSize: 50);
 final kRecordNumStyle = TextStyle(fontSize: 30);
 final kRecordTextStyle = TextStyle(fontSize: 20);
 final kDashboardSmallTextStyle = TextStyle(fontSize: 16);
+final kTodayTextStyle = TextStyle(fontSize: 40);
+final kTodayNumStyle = TextStyle(fontSize: 56);
 const double zoomLevel = 20;
 
 String formatDistance(double distance) => (distance/1000).toStringAsFixed(2);
