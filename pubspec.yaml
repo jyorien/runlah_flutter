@@ -25,6 +25,8 @@ dependencies:
   fl_chart: ^0.36.0 # for bar chart
   light: ^2.0.0
   screen: ^0.0.5
+  shared_preferences: ^2.0.5
+  provider: ^5.0.0
 
 
 
