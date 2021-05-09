@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FirebaseAuth _auth;
   String email;
   String password;
+  bool isLandscape;
   @override
   void initState() {
     super.initState();
@@ -26,56 +27,68 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      setState(() => isLandscape = true);
+    }
+
+    else {
+      setState(() => isLandscape = false);
+    }
+ 
     return Scaffold(
       resizeToAvoidBottomInset: false, // prevent keyb from pushing screen up
       body: SafeArea(
-          child: Padding(
+          child: Container(
+            decoration: isLandscape ? BoxDecoration(border: Border.all(width: 200)) :  BoxDecoration(),
+            child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Login',
-              style: kWelcomeTextStyle,
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            TextField(
-              decoration: kInputDecoration.copyWith(hintText: 'Email'),
-              onChanged: (value) => email = value,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextField(
-              obscureText: true,
-              decoration: kInputDecoration.copyWith(hintText: 'Password'),
-              onChanged: (value) => password = value,
-            ),
-            SizedBox(height: 20,),
-            CircularMaterialButton(text: 'Login',onPressed:() async {
-              try {
-                final user = await _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
-                if (user != null) {
-                  Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Login',
+                style: kWelcomeTextStyle,
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              TextField(
+                decoration: kInputDecoration.copyWith(hintText: 'Email'),
+                onChanged: (value) => email = value,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
+                obscureText: true,
+                decoration: kInputDecoration.copyWith(hintText: 'Password'),
+                onChanged: (value) => password = value,
+              ),
+              SizedBox(height: 20,),
+              CircularMaterialButton(text: 'Login',onPressed:() async {
+                try {
+                  final user = await _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
+                  if (user != null) {
+                    Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
+                  }
+                } catch (e) {
+                  final snackBar = SnackBar(content: Text(e.toString()),);
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-              } catch (e) {
-                final snackBar = SnackBar(content: Text(e.toString()),);
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
 
-            },),
-            SizedBox(height: 20,),
-            GestureDetector(
-              child: Text('No account? Sign up here!'),
-              onTap: () {
-                Navigator.pushNamed(context, SignUpScreen.id);
-              },
-            )
-          ],
+              },),
+              SizedBox(height: 20,),
+              GestureDetector(
+                child: Text('No account? Sign up here!'),
+                onTap: () {
+                  Navigator.pushNamed(context, SignUpScreen.id);
+                },
+              ),
+              // black the screen
+            ],
         ),
-      )),
+      ),
+          )),
     );
   }
 }

@@ -18,8 +18,17 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   void navigateToSettings() {
     Navigator.pushNamed(context, SettingsScreen.id);
   }
+  bool isLandscape;
+
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      setState(() => isLandscape = true);
+    }
+
+    else {
+      setState(() => isLandscape = false);
+    }
     AppBar todayAppBar = AppBar(
       title: Text("Today"),
       actions: [
@@ -33,10 +42,13 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         )
       ],
     );
-    if (_currentIndex == 0) appBar = todayAppBar;
+    if (_currentIndex == 0 && MediaQuery.of(context).orientation == Orientation.portrait) appBar = todayAppBar;
+    else appBar = null;
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+    }
     return Scaffold(
       appBar: appBar,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: isLandscape ? null :BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.deepPurple,
@@ -70,6 +82,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       body: SafeArea(
         child: Container(
           child: tabs[_currentIndex],
+          decoration: isLandscape ? BoxDecoration(border: Border.all(width: 200)) : BoxDecoration(),
         ),
       ),
     );

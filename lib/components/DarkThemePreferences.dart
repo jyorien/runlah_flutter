@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DarkThemePreferences with ChangeNotifier {
   static const THEME_STATUS = "status";
-  bool _isDark = false;
 
 
   setDarkTheme(bool value) async {

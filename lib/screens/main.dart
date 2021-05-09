@@ -3,7 +3,6 @@ import 'package:light/light.dart';
 import 'package:provider/provider.dart';
 import 'package:runlah_flutter/components/DarkThemePreferences.dart';
 import 'package:runlah_flutter/screens/bottmnav_screen.dart';
-import 'package:runlah_flutter/screens/result_screen.dart';
 import 'package:runlah_flutter/screens/settings_screen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:runlah_flutter/screens/today_screen.dart';
