@@ -11,10 +11,11 @@ class CardTile extends StatelessWidget {
   String averageSpeed;
   String stepCount;
   List<LatLng> listLatLng;
+  String uuid;
 
 
   CardTile(
-      {this.dateTime = "", this.sessionDistance = "", this.timeTaken = "", this.averageSpeed = "", this.stepCount = "", this.listLatLng});
+      {this.dateTime = "", this.sessionDistance = "", this.timeTaken = "", this.averageSpeed = "", this.stepCount = "", this.listLatLng, this.uuid});
 
 @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class CardTile extends StatelessWidget {
                 stepCount: stepCount,
                 timeTaken: timeTaken,
                 latLngList: listLatLng,
+                uuid: uuid,
 
               ),
             ),

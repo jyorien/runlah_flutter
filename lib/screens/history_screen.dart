@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
 
 class HistoryScreen extends StatefulWidget {
   // receive latlng list, time taken, session step count, average speed, session distance
@@ -10,19 +13,33 @@ class HistoryScreen extends StatefulWidget {
   String stepCount;
   String averageSpeed;
   String sessionDistance;
+  String uuid;
 
   HistoryScreen(
       {this.stepCount = "0",
       this.averageSpeed = "0.0",
       this.timeTaken = "00:00",
       this.sessionDistance = "0.0",
-      this.latLngList});
+      this.latLngList,
+      this.uuid});
 
   @override
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  Widget imageWidget = Container();
+  Future<void> downloadImage() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String downloadURL = await firebase_storage.FirebaseStorage.instance.ref('${auth.currentUser.uid}/${widget.uuid}').getDownloadURL();
+    if (downloadURL != null)
+      setState(() => imageWidget = Image.network(downloadURL));
+  }
+  @override
+  void initState() {
+    super.initState();
+    downloadImage();
+  }
   @override
   Widget build(BuildContext context) {
     List<LatLng> latLngList = widget.latLngList;
@@ -54,6 +71,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           timeTaken: timeTaken,
           stepCount: stepCount,
         ),
+        Expanded(child: imageWidget)
       ],
     ));
   }
