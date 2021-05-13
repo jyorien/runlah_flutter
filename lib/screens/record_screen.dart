@@ -8,7 +8,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:runlah_flutter/screens/main.dart';
 import 'package:runlah_flutter/screens/result_screen.dart';
+
+import 'camera_screen.dart';
 
 class RecordScreen extends StatefulWidget {
   @override
@@ -97,32 +100,31 @@ class _RecordScreenState extends State<RecordScreen> {
 
   void _requestActivityPermission() async {
     var activityPermissionStatus = await Permission.activityRecognition.status;
-    if (activityPermissionStatus.isDenied || activityPermissionStatus.isPermanentlyDenied) {
-     if (await Permission.activityRecognition.request().isGranted) {
-       requestLocationPermission();
-     }
-
+    if (activityPermissionStatus.isDenied ||
+        activityPermissionStatus.isPermanentlyDenied) {
+      if (await Permission.activityRecognition.request().isGranted) {
+        requestLocationPermission();
+      }
     }
     if (activityPermissionStatus.isGranted) {
       initStepStream();
       requestLocationPermission();
     }
-
   }
+
   void requestLocationPermission() async {
-      if (await Permission.location.request().isGranted) {
-        initMap();
-        print("INIT MAP 1");
-        initPositionStream();
-
-      }
-
+    if (await Permission.location.request().isGranted) {
+      initMap();
+      print("INIT MAP 1");
+      initPositionStream();
+    }
   }
+
   void initMap() {
     setState(() {
       googleMap = GoogleMap(
         initialCameraPosition:
-        CameraPosition(target: LatLng(1.3521, 103.8198), zoom: 7),
+            CameraPosition(target: LatLng(1.3521, 103.8198), zoom: 7),
         mapType: MapType.normal,
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
@@ -161,7 +163,7 @@ class _RecordScreenState extends State<RecordScreen> {
     _currentPosition = await Geolocator.getCurrentPosition();
     print(_currentPosition);
     final currentLatLng =
-    LatLng(_currentPosition.latitude, _currentPosition.longitude);
+        LatLng(_currentPosition.latitude, _currentPosition.longitude);
     _controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: currentLatLng, zoom: zoomLevel)));
 
@@ -220,16 +222,29 @@ class _RecordScreenState extends State<RecordScreen> {
           .add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
     }
     print(_latLngList.toString());
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => ResultScreen(
+    //               latLngList: _latLngList,
+    //               timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
+    //               sessionDistance: _totalDistance,
+    //               stepCount: _sessionStepCount,
+    //               averageSpeed: averageSpeed,
+    //             )));
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ResultScreen(
-                  latLngList: _latLngList,
-                  timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
-                  sessionDistance: _totalDistance,
-                  stepCount: _sessionStepCount,
-                  averageSpeed: averageSpeed,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (context) => TakePictureScreen(
+          camera: firstCamera,
+          latLngList: _latLngList,
+          timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
+          sessionDistance: _totalDistance,
+          stepCount: _sessionStepCount,
+          averageSpeed: averageSpeed,
+        ),
+      ),
+    );
   }
 
   @override

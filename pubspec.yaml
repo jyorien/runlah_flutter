@@ -28,6 +28,9 @@ dependencies:
   shared_preferences: ^2.0.5
   provider: ^5.0.0
   environment_sensors: ^0.2.0
+  camera: ^0.8.1
+  firebase_storage: ^8.0.6
+  uuid: ^3.0.4
 
 
 

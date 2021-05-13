@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:light/light.dart';
 import 'package:provider/provider.dart';
@@ -9,10 +10,12 @@ import 'package:runlah_flutter/screens/today_screen.dart';
 import 'package:screen/screen.dart';
 import 'login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+CameraDescription firstCamera;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final cameras = await availableCameras();
+  firstCamera = cameras.first;
   runApp(MyApp());
 }
 

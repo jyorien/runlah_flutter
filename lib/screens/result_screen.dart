@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:runlah_flutter/screens/bottmnav_screen.dart';
+import 'package:uuid/uuid.dart';
 
 class ResultScreen extends StatefulWidget {
   static const id = 'results';
@@ -15,19 +18,36 @@ class ResultScreen extends StatefulWidget {
   int stepCount;
   double averageSpeed;
   double sessionDistance;
+  String imagePath;
 
   ResultScreen(
       {this.latLngList,
       this.timeTaken,
       this.stepCount,
       this.averageSpeed,
-      this.sessionDistance});
+      this.sessionDistance,
+      this.imagePath});
 
   @override
   _ResultScreenState createState() => _ResultScreenState();
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  Future<void> uploadFile(String filePath, String uuid) async {
+    File file = File(filePath);
+    FirebaseAuth auth = FirebaseAuth.instance;
+    try {
+      await firebase_storage.FirebaseStorage.instance.ref("${auth.currentUser.uid}/$uuid")
+      .putFile(file).whenComplete(() {
+        Navigator.pushNamedAndRemoveUntil(
+            context, BottomNavigationScreen.id, (route) => false);
+      });
+
+    } catch(e) {
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<LatLng> latLngList = widget.latLngList;
@@ -66,12 +86,21 @@ class _ResultScreenState extends State<ResultScreen> {
                   averageSpeed: averageSpeed.toStringAsFixed(2),
                   stepCount: stepCount.toString(),
                   timeTaken: timeTaken)),
+          Container(
+            child: Expanded(
+              child: Image.file(
+                File(widget.imagePath),
+              ),
+            ),
+          ),
         ],
       )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.arrow_forward_ios),
         onPressed: () {
           final _firestore = FirebaseFirestore.instance;
+          final uuid =  Uuid();
+          final String uniqueKey = uuid.v4();
           final _auth = FirebaseAuth.instance;
           final coordinatesMap = getCoordinatesMap(latLngList);
           final Map<String, dynamic> sessionData = {
@@ -80,18 +109,16 @@ class _ResultScreenState extends State<ResultScreen> {
             "stepCount": stepCount,
             "averageSpeed": averageSpeed,
             "distanceTravelled": sessionDistance,
-            "coordinatesArray": coordinatesMap
+            "coordinatesArray": coordinatesMap,
+            "uuid": uniqueKey
           };
           _firestore
               .collection('users')
               .doc(_auth.currentUser.uid)
               .collection('records')
-              .add(sessionData)
-              .whenComplete(()  {
-            Navigator.pushNamedAndRemoveUntil(
-                context, BottomNavigationScreen.id, (route) => false);
-          });
-
+              .doc(uniqueKey)
+              .set(sessionData)
+              .whenComplete(() => uploadFile(widget.imagePath, uniqueKey));
         },
       ),
     );
