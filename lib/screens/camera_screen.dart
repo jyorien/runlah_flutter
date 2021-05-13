@@ -79,6 +79,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           // catch the error.
           try {
             // Ensure that the camera is initialized.
+            _controller.setFlashMode(FlashMode.off);
             await _initializeControllerFuture;
 
             // Attempt to take a picture and get the file `image`

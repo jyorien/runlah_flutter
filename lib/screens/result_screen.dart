@@ -57,7 +57,8 @@ class _ResultScreenState extends State<ResultScreen> {
     double sessionDistance = widget.sessionDistance;
     return Scaffold(
       body: SafeArea(
-          child: Column(
+          child: ListView(
+            shrinkWrap: true,
         children: [
           Container(
             child: GoogleMap(
@@ -80,18 +81,14 @@ class _ResultScreenState extends State<ResultScreen> {
           SizedBox(
             height: 10,
           ),
-          Expanded(
-              child: RecordStats(
-                  sessionDistance: formatDistance(sessionDistance),
-                  averageSpeed: averageSpeed.toStringAsFixed(2),
-                  stepCount: stepCount.toString(),
-                  timeTaken: timeTaken)),
-          Container(
-            child: Expanded(
-              child: Image.file(
-                File(widget.imagePath),
-              ),
-            ),
+          RecordStats(
+              sessionDistance: formatDistance(sessionDistance),
+              averageSpeed: averageSpeed.toStringAsFixed(2),
+              stepCount: stepCount.toString(),
+              timeTaken: timeTaken),
+          SizedBox(height: 20,),
+          Image.file(
+            File(widget.imagePath),
           ),
         ],
       )),

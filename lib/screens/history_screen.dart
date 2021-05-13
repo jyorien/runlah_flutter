@@ -47,32 +47,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
     String stepCount = widget.stepCount;
     String averageSpeed = widget.averageSpeed;
     String sessionDistance = widget.sessionDistance;
-    print(latLngList.last);
     return Scaffold(
-        body: Column(
-      children: [
-        Container(
-          height: 400,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(target: latLngList.first, zoom: zoomLevel),
-            markers: {
-              Marker(markerId: MarkerId("start"), position: latLngList.first),
-              Marker(markerId: MarkerId("end"), position: latLngList.last)
-            },
-            polylines: {
-              Polyline(polylineId: PolylineId("route"), points: latLngList, color: Colors.blue)
-            },
+        body: ListView(
+          shrinkWrap: true,
+          children: [Container(
+            height: 400,
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(target: latLngList.first, zoom: zoomLevel),
+              markers: {
+                Marker(markerId: MarkerId("start"), position: latLngList.first),
+                Marker(markerId: MarkerId("end"), position: latLngList.last)
+              },
+              polylines: {
+                Polyline(polylineId: PolylineId("route"), points: latLngList, color: Colors.blue)
+              },
+            ),
           ),
-        ),
-        SizedBox(height: 30,),
-        RecordStats(
-          averageSpeed: averageSpeed,
-          sessionDistance: sessionDistance,
-          timeTaken: timeTaken,
-          stepCount: stepCount,
-        ),
-        Expanded(child: imageWidget)
-      ],
-    ));
+          SizedBox(height: 30,),
+          RecordStats(
+            averageSpeed: averageSpeed,
+            sessionDistance: sessionDistance,
+            timeTaken: timeTaken,
+            stepCount: stepCount,
+          ),
+          SizedBox(height: 20,),
+          imageWidget,]
+        ));
   }
 }

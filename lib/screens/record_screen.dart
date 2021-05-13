@@ -211,10 +211,16 @@ class _RecordScreenState extends State<RecordScreen> {
   void passData() {
     // calculate avg speed
     double averageSpeed = 0.0;
-    _speedList.forEach((element) {
-      averageSpeed += element;
-    });
-    averageSpeed = averageSpeed / _speedList.length;
+    print("speed list");
+    print("$_speedList");
+    if (_speedList.length > 0) {
+      _speedList.forEach((element) {
+        averageSpeed += element;
+      });
+      averageSpeed = averageSpeed / _speedList.length;
+    }
+    else
+      averageSpeed = 0.00;
 
     if (_latLngList.isEmpty) {
       // make sure the list has at least 1 element
