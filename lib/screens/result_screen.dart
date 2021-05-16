@@ -86,10 +86,13 @@ class _ResultScreenState extends State<ResultScreen> {
               averageSpeed: averageSpeed.toStringAsFixed(2),
               stepCount: stepCount.toString(),
               timeTaken: timeTaken),
-          SizedBox(height: 20,),
-          Image.file(
-            File(widget.imagePath),
-          ),
+          SizedBox(height: 10,),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            foregroundDecoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill,image: FileImage(File(widget.imagePath)))),
+          )
+
         ],
       )),
       floatingActionButton: FloatingActionButton(

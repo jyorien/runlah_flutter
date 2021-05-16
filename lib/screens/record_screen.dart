@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:runlah_flutter/components/DarkThemePreferences.dart';
 import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
@@ -39,6 +42,7 @@ class _RecordScreenState extends State<RecordScreen> {
   Timer _timer;
   Stopwatch _stopwatch;
 
+  DarkThemeProvider themeChange;
   @override
   void dispose() {
     if (_positionStream != null) _positionStream.cancel();
@@ -218,8 +222,7 @@ class _RecordScreenState extends State<RecordScreen> {
         averageSpeed += element;
       });
       averageSpeed = averageSpeed / _speedList.length;
-    }
-    else
+    } else
       averageSpeed = 0.00;
 
     if (_latLngList.isEmpty) {
@@ -227,17 +230,7 @@ class _RecordScreenState extends State<RecordScreen> {
       _latLngList
           .add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
     }
-    print(_latLngList.toString());
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => ResultScreen(
-    //               latLngList: _latLngList,
-    //               timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
-    //               sessionDistance: _totalDistance,
-    //               stepCount: _sessionStepCount,
-    //               averageSpeed: averageSpeed,
-    //             )));
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -255,51 +248,95 @@ class _RecordScreenState extends State<RecordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 10),
-          child: RecordStats(
-            timeTaken: formatTime(_stopwatch.elapsedMilliseconds),
-            averageSpeed: _currentSpeed,
-            stepCount: _sessionStepCount.toString(),
-            sessionDistance: (_totalDistance / 1000).toStringAsFixed(2),
+    themeChange = Provider.of<DarkThemeProvider>(context);
+    return Stack(children: [
+      googleMap,
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+          child: Container(
+            decoration: BoxDecoration(color: themeChange.isDark?Color(
+                0xDF232323):Color(0xEF7E57C2),borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            formatTime(_stopwatch.elapsedMilliseconds),
+                            style: TextStyle(fontSize: 40, color: Colors.white),
+                          )
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              Text( _sessionStepCount.toString(), style: kRecordNumStyle,),
+                              Text('Steps', style: kRecordTextStyle,),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text("${(_totalDistance / 1000).toStringAsFixed(2)}", style: kRecordNumStyle,),
+                              Text('km', style: kRecordTextStyle),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text("$_currentSpeed", style: kRecordNumStyle,),
+                              Text('m/s',style: kRecordTextStyle),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: MaterialButton(
+                      onPressed: () {
+                        if (!_isStart) {
+                          _isStart = true;
+                          _startStepCount = _totalStepCount;
+                          setState(() {
+                            btnText = 'STOP';
+                            _stopwatch.start();
+                          });
+                        } else {
+                          _isStart = false;
+                          setState(() {
+                            btnText = 'START';
+                            _stopwatch.stop();
+                          });
+                          passData();
+                        }
+                        setState(() {});
+                      },
+                      child: Text(
+                        btnText,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: themeChange.isDark? Colors.black54 :Colors.deepPurple,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        Expanded(
-          child: Stack(children: [
-            googleMap,
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: MaterialButton(
-                onPressed: () {
-                  if (!_isStart) {
-                    _isStart = true;
-                    _startStepCount = _totalStepCount;
-                    setState(() {
-                      btnText = 'STOP';
-                      _stopwatch.start();
-                    });
-                  } else {
-                    _isStart = false;
-                    setState(() {
-                      btnText = 'START';
-                      _stopwatch.stop();
-                    });
-                    passData();
-                  }
-                  setState(() {});
-                },
-                child: Text(
-                  btnText,
-                  style: TextStyle(color: Colors.white),
-                ),
-                color: Colors.deepPurple,
-              ),
-            )
-          ]),
-        ),
-      ],
-    );
+      ),
+    ]);
   }
 }

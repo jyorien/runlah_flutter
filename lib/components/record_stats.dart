@@ -29,24 +29,24 @@ class RecordStats extends StatelessWidget {
               children: [
                 Text(
                   stepCount,
-                  style: kRecordNumStyle,
+                  style: kStatsNumStyle,
                 ),
                 Text(
                   'Steps',
-                  style: kRecordTextStyle,
+                  style: kStatsTextStyle,
                 ),
               ],
             ),
             Column(
               children: [
-                Text("$sessionDistance km", style: kRecordNumStyle),
-                Text('Distance', style: kRecordTextStyle),
+                Text("$sessionDistance km", style: kStatsNumStyle),
+                Text('Distance', style: kStatsTextStyle),
               ],
             ),
             Column(
               children: [
-                Text("$averageSpeed m/s", style: kRecordNumStyle),
-                Text('Speed', style: kRecordTextStyle),
+                Text("$averageSpeed m/s", style: kStatsNumStyle),
+                Text('Speed', style: kStatsTextStyle),
               ],
             ),
           ],

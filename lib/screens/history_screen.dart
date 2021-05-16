@@ -32,8 +32,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> downloadImage() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     String downloadURL = await firebase_storage.FirebaseStorage.instance.ref('${auth.currentUser.uid}/${widget.uuid}').getDownloadURL();
-    if (downloadURL != null)
-      setState(() => imageWidget = Image.network(downloadURL));
+    if (downloadURL != null) {
+      setState(() => imageWidget = Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        foregroundDecoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill,image: NetworkImage(downloadURL))),
+      ));
+    }
   }
   @override
   void initState() {

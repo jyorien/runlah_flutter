@@ -15,8 +15,10 @@ final kInputDecoration = InputDecoration(
 
 final kWelcomeTextStyle = TextStyle(fontSize: 50);
 
-final kRecordNumStyle = TextStyle(fontSize: 30);
-final kRecordTextStyle = TextStyle(fontSize: 20);
+final kRecordNumStyle = TextStyle(fontSize: 20, color:Colors.white);
+final kRecordTextStyle = TextStyle(fontSize: 15, color: Colors.white);
+final kStatsNumStyle = TextStyle(fontSize: 30);
+final kStatsTextStyle = TextStyle(fontSize: 20);
 final kDashboardSmallTextStyle = TextStyle(fontSize: 16);
 final kTodayTextStyle = TextStyle(fontSize: 40);
 final kTodayNumStyle = TextStyle(fontSize: 56);
