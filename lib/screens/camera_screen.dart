@@ -64,20 +64,57 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
             return Stack(children: [
+              // preview screen
               CameraPreview(_controller),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(Icons.camera_alt,color: Colors.white,),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
-                    ),),
+              // capture button
+              GestureDetector(
+                onTap: () async {
+                  // Take the Picture in a try / catch block. If anything goes wrong,
+                  // catch the error.
+                  try {
+                    // Ensure that the camera is initialized.
+                    _controller.setFlashMode(FlashMode.off);
+                    await _initializeControllerFuture;
+
+                    // Attempt to take a picture and get the file `image`
+                    // where it was saved.
+                    final image = await _controller.takePicture();
+
+                    // If the picture was taken, display it on a new screen.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultScreen(
+                          // Pass the automatically generated path to
+                          // the DisplayPictureScreen widget.
+                          imagePath: image?.path,
+                          averageSpeed: widget.averageSpeed,
+                          stepCount: widget.stepCount,
+                          sessionDistance: widget.sessionDistance,
+                          timeTaken: widget.timeTaken,
+                          latLngList: widget.latLngList,
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    // If an error occurs, log the error to the console.
+                    print(e);
+                  }
+                },
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Icon(Icons.camera_alt,color: Colors.white,),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.all(Radius.circular(50))
+                      ),),
+                  ),
                 ),
               ),
             ]);
