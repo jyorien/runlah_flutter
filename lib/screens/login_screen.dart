@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _auth = FirebaseAuth.instance;
+
   }
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     else {
       setState(() => isLandscape = false);
     }
- 
+
     return Scaffold(
       resizeToAvoidBottomInset: false, // prevent keyb from pushing screen up
       body: SafeArea(

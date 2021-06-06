@@ -4,6 +4,7 @@ import 'package:light/light.dart';
 import 'package:provider/provider.dart';
 import 'package:runlah_flutter/components/DarkThemePreferences.dart';
 import 'package:runlah_flutter/screens/bottmnav_screen.dart';
+import 'package:runlah_flutter/screens/initial_screen.dart';
 import 'package:runlah_flutter/screens/settings_screen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:runlah_flutter/screens/today_screen.dart';
@@ -68,7 +69,7 @@ class _MyAppState extends State<MyApp> {
         builder: (BuildContext context, value, Widget child) {
           return MaterialApp(
             title: 'RunLah',
-            home: LoginScreen(),
+            home: InitialScreen(),
             theme: Styles.themeData(themeChangeProvider.isDark, context),
             // theme: ThemeData.light().copyWith(
             //     primaryColor: Colors.deepPurple,
@@ -80,6 +81,7 @@ class _MyAppState extends State<MyApp> {
             //     bottomNavigationBarTheme: BottomNavigationBarThemeData()),
             // themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
             routes: {
+              InitialScreen.id: (context) => InitialScreen(),
               LoginScreen.id: (context) => LoginScreen(),
               SignUpScreen.id: (context) => SignUpScreen(),
               TodayScreen.id: (context) => TodayScreen(),
