@@ -20,8 +20,8 @@ final kRecordTextStyle = TextStyle(fontSize: 15, color: Colors.white);
 final kStatsNumStyle = TextStyle(fontSize: 30);
 final kStatsTextStyle = TextStyle(fontSize: 20);
 final kDashboardSmallTextStyle = TextStyle(fontSize: 16);
-final kTodayTextStyle = TextStyle(fontSize: 40);
-final kTodayNumStyle = TextStyle(fontSize: 56);
+final kTodayTextStyle = TextStyle(fontSize: 20, color: Colors.white);
+final kTodayNumStyle = TextStyle(fontSize: 36, color: Colors.white);
 const double zoomLevel = 20;
 
 String formatDistance(double distance) => (distance/1000).toStringAsFixed(2);

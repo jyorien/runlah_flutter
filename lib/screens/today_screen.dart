@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:environment_sensors/environment_sensors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:runlah_flutter/components/DarkThemePreferences.dart';
 import 'package:runlah_flutter/constants.dart';
 
 class TodayScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _TodayScreenState extends State<TodayScreen> {
   Widget temperatureWidget = Container();
   var temperatureStream;
   String currentTemperature;
+  DarkThemeProvider themeChange;
 
   void displayTemperature() async {
     await environmentSensors
@@ -33,13 +36,30 @@ class _TodayScreenState extends State<TodayScreen> {
     temperatureStream = environmentSensors.temperature.listen((temperature) {
       setState(() {
         currentTemperature = temperature.toStringAsFixed(1);
-        temperatureWidget = Column(
-          children: [
-            Text('Temperature', style: kTodayTextStyle,),
-            Text("$currentTemperature \u2103", style: kTodayNumStyle,),
-          ],
+        temperatureWidget = Container(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(vertical: 30.0),
+          decoration: BoxDecoration(
+              color: themeChange.isDark
+                  ? Color(0xDF232323)
+                  : Color(0xEF7E57C2),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Temperature',
+                style: kTodayTextStyle,
+              ),
+              SizedBox(width: 10,),
+              Text(
+                "$currentTemperature \u2103",
+                style: kTodayNumStyle,
+              ),
+            ],
+          ),
         );
-      } );
+      });
     });
   }
 
@@ -85,18 +105,56 @@ class _TodayScreenState extends State<TodayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    themeChange = Provider.of<DarkThemeProvider>(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           temperatureWidget,
-          Text(
-            "Today's Distance",
-            style: kTodayTextStyle,
+          SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: themeChange.isDark
+                            ? Color(0xDF232323)
+                            : Color(0xEF7E57C2),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
+                    child: Column(
+                      children: [
+                        Text("Today's Distance", style: kTodayTextStyle),
+                        Text(_todayDistance, style: kTodayNumStyle),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: themeChange.isDark
+                            ? Color(0xDF232323)
+                            : Color(0xEF7E57C2),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
+                    child: Column(
+                      children: [
+                        Text("Today's Step Count", style: kTodayTextStyle),
+                        Text(_todaySteps, style: kTodayNumStyle),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          Text(_todayDistance, style: kTodayNumStyle),
-          Text("Today's Step Count", style: kTodayTextStyle),
-          Text(_todaySteps, style: kTodayNumStyle),
         ],
       ),
     );
