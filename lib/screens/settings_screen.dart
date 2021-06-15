@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:runlah_flutter/components/DarkThemePreferences.dart';
+import 'package:runlah_flutter/providers/DarkThemePreferences.dart';
 import 'package:runlah_flutter/screens/login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
