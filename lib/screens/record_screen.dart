@@ -26,15 +26,11 @@ class _RecordScreenState extends State<RecordScreen> {
   Widget googleMap = Container();
   GoogleMapController _controller;
   Position _currentPosition;
-  List<double> _speedList = [];
-  List<LatLng> _latLngList = [];
   Set<Polyline> _polylineSet = {};
   String _currentSpeed = "0.00";
-  double _totalDistance = 0.00;
 
   int _totalStepCount = 0;
   int _startStepCount = 0;
-  int _sessionStepCount = 0;
 
   String btnText = "START";
   bool _isStart = false;
@@ -124,16 +120,16 @@ class _RecordScreenState extends State<RecordScreen> {
           LatLng(_currentPosition.latitude, _currentPosition.longitude);
       final newLatLng = LatLng(event.latitude, event.longitude);
       if (_isStart) {
-        _latLngList.add(newLatLng);
-        _speedList.add(event.speed);
+        stopwatchProvider.addToLatLngList(newLatLng);
+        stopwatchProvider.addToSpeedList(event.speed);
         setState(() {
-          _totalDistance += Geolocator.distanceBetween(currentLatLng.latitude,
-              currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
+          stopwatchProvider.addToTotalDistance(Geolocator.distanceBetween(currentLatLng.latitude,
+              currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude));
           _currentSpeed = event.speed.toStringAsFixed(2);
           Polyline _newLine = Polyline(
               polylineId: PolylineId(event.timestamp.toString()),
               color: Colors.blue,
-              points: _latLngList);
+              points: stopwatchProvider.latLngList);
           _polylineSet.add(_newLine);
         });
       }
@@ -152,7 +148,7 @@ class _RecordScreenState extends State<RecordScreen> {
     _totalStepCount = event.steps;
     if (_isStart)
       setState(() {
-        _sessionStepCount = _totalStepCount - _startStepCount;
+        stopwatchProvider.setStepCount(_totalStepCount - _startStepCount);
       });
   }
 
@@ -163,34 +159,37 @@ class _RecordScreenState extends State<RecordScreen> {
   void passData() {
     // store final time then reset stopwatch
     final sessionTime = stopwatchProvider.sessionTime;
-    stopwatchProvider.resetStopwatch();
+    final sessDistance = stopwatchProvider.sessionDistance;
+    final sessSteps = stopwatchProvider.stepCount;
     // calculate avg speed
     double averageSpeed = 0.0;
-    print("speed list");
-    print("$_speedList");
-    if (_speedList.length > 0) {
-      _speedList.forEach((element) {
+
+    if (stopwatchProvider.speedList.length > 0) {
+      stopwatchProvider.speedList.forEach((element) {
         averageSpeed += element;
       });
-      averageSpeed = averageSpeed / _speedList.length;
+      averageSpeed = averageSpeed / stopwatchProvider.speedList.length;
     } else
       averageSpeed = 0.00;
 
-    if (_latLngList.isEmpty) {
+    if (stopwatchProvider.latLngList.isEmpty) {
       // make sure the list has at least 1 element
-      _latLngList
+      stopwatchProvider.latLngList
           .add(LatLng(_currentPosition.latitude, _currentPosition.longitude));
     }
+    final sessionLatLngList = stopwatchProvider.latLngList;
+    stopwatchProvider.resetStopwatch();
+
 
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => TakePictureScreen(
           camera: firstCamera,
-          latLngList: _latLngList,
+          latLngList: sessionLatLngList,
           timeTaken: sessionTime,
-          sessionDistance: _totalDistance,
-          stepCount: _sessionStepCount,
+          sessionDistance: sessDistance,
+          stepCount: sessSteps,
           averageSpeed: averageSpeed,
         ),
       ),
@@ -232,13 +231,13 @@ class _RecordScreenState extends State<RecordScreen> {
                         children: [
                           Column(
                             children: [
-                              Text( _sessionStepCount.toString(), style: kRecordNumStyle,),
+                              Text( stopwatchProvider.stepCount.toString(), style: kRecordNumStyle,),
                               Text('Steps', style: kRecordTextStyle,),
                             ],
                           ),
                           Column(
                             children: [
-                              Text("${(_totalDistance / 1000).toStringAsFixed(2)}", style: kRecordNumStyle,),
+                              Text("${(stopwatchProvider.sessionDistance / 1000).toStringAsFixed(2)}", style: kRecordNumStyle,),
                               Text('km', style: kRecordTextStyle),
                             ],
                           ),
