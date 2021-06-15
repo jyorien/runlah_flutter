@@ -81,7 +81,7 @@ class _TodayScreenState extends State<TodayScreen> {
     FirebaseAuth auth = FirebaseAuth.instance;
     DateTime today = DateTime.now();
     var totalDistance = 0.0;
-    var totalSteps = 0;
+    var totalSteps = 0.0;
     var result = await firestore
         .collection('users')
         .doc(auth.currentUser.uid)
@@ -98,9 +98,11 @@ class _TodayScreenState extends State<TodayScreen> {
         totalSteps += element["stepCount"];
       }
     });
-    _todayDistance = "${(totalDistance / 1000).toStringAsFixed(2)} km";
-    _todaySteps = "$totalSteps steps";
-    setState(() {});
+
+    setState(() {
+      _todayDistance = "${(totalDistance / 1000).toStringAsFixed(2)} km";
+      _todaySteps = "${totalSteps.toInt()} steps";
+    });
   }
 
   @override
