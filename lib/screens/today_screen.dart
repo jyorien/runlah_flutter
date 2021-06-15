@@ -3,8 +3,10 @@ import 'package:environment_sensors/environment_sensors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:runlah_flutter/components/DarkThemePreferences.dart';
+import 'package:runlah_flutter/providers/DarkThemePreferences.dart';
 import 'package:runlah_flutter/constants.dart';
+import 'package:runlah_flutter/providers/TipProvider.dart';
+import 'package:runlah_flutter/utils/Tips.dart';
 
 class TodayScreen extends StatefulWidget {
   static const id = 'today';
@@ -16,11 +18,13 @@ class TodayScreen extends StatefulWidget {
 class _TodayScreenState extends State<TodayScreen> {
   String _todayDistance = "0.00 km";
   String _todaySteps = "0 steps";
+  String _tipOfDay = "Loading...";
   final environmentSensors = EnvironmentSensors();
   Widget temperatureWidget = Container();
   var temperatureStream;
   String currentTemperature;
   DarkThemeProvider themeChange;
+  TipProvider tipProvider = TipProvider();
 
   void displayTemperature() async {
     await environmentSensors
@@ -68,6 +72,11 @@ class _TodayScreenState extends State<TodayScreen> {
     super.initState();
     displayTemperature();
     getData();
+    tipProvider.getTip().then((value) {
+      setState(() {
+        _tipOfDay = value;
+      });
+    });
   }
 
   @override
@@ -107,12 +116,29 @@ class _TodayScreenState extends State<TodayScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     themeChange = Provider.of<DarkThemeProvider>(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           temperatureWidget,
+          SizedBox(height: 10,),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: 30.0),
+            decoration: BoxDecoration(
+                color: themeChange.isDark
+                    ? Color(0xDF232323)
+                    : Color(0xEF7E57C2),
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(child: Center(child: Text(_tipOfDay ?? "Stay hydrated!", style: kTodayTextStyle))),
+              ],
+            ),
+          ),
           SizedBox(height: 10,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -126,7 +152,7 @@ class _TodayScreenState extends State<TodayScreen> {
                             : Color(0xEF7E57C2),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     padding:
-                        EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
+                    EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
                     child: Column(
                       children: [
                         Text("Today's Distance", style: kTodayTextStyle),
@@ -145,7 +171,7 @@ class _TodayScreenState extends State<TodayScreen> {
                             : Color(0xEF7E57C2),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     padding:
-                        EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
+                    EdgeInsets.symmetric(vertical: 80.0, horizontal: 10.0),
                     child: Column(
                       children: [
                         Text("Today's Step Count", style: kTodayTextStyle),

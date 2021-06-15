@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:light/light.dart';
 import 'package:provider/provider.dart';
-import 'package:runlah_flutter/components/DarkThemePreferences.dart';
+import 'package:runlah_flutter/providers/DarkThemePreferences.dart';
 import 'package:runlah_flutter/screens/bottmnav_screen.dart';
 import 'package:runlah_flutter/screens/initial_screen.dart';
 import 'package:runlah_flutter/screens/settings_screen.dart';
