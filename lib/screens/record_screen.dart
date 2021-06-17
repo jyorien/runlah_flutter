@@ -11,7 +11,7 @@ import 'package:runlah_flutter/providers/DarkThemePreferences.dart';
 import 'package:runlah_flutter/components/record_stats.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:runlah_flutter/screens/main.dart';
+import 'package:runlah_flutter/main.dart';
 import 'package:runlah_flutter/screens/result_screen.dart';
 
 import 'camera_screen.dart';

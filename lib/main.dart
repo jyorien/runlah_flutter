@@ -9,7 +9,7 @@ import 'package:runlah_flutter/screens/settings_screen.dart';
 import 'package:runlah_flutter/screens/signup_screen.dart';
 import 'package:runlah_flutter/screens/today_screen.dart';
 import 'package:screen/screen.dart';
-import 'login_screen.dart';
+import 'screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 CameraDescription firstCamera;
 void main() async {
