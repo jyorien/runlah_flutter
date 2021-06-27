@@ -8,7 +8,7 @@
         android:label="runlah_flutter"
         android:icon="@mipmap/launcher_icon">
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyDrlnGZsWVoThE1MVBmzr6f451Hamdr4ms"/>
+           android:value="AIzaSyAPkL-Wq3geQ9g7nVa7DfKqcwAfEdft3pE"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
