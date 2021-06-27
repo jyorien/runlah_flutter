@@ -28,7 +28,6 @@ class _RecordScreenState extends State<RecordScreen> {
   Position _currentPosition;
   List<double> _speedList = [];
   List<LatLng> _latLngList = [];
-  Set<Polyline> _polylineSet = {};
   String _currentSpeed = "0.00";
   double _totalDistance = 0.00;
 
@@ -121,7 +120,6 @@ class _RecordScreenState extends State<RecordScreen> {
     if (await Permission.location.request().isGranted) {
       initMap();
       print("INIT MAP 1");
-      initPositionStream();
     }
   }
 
@@ -133,9 +131,17 @@ class _RecordScreenState extends State<RecordScreen> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
-        polylines: _polylineSet,
+        polylines: {Polyline(
+          visible: true,
+          polylineId: PolylineId("polyline1"),
+          color: Colors.blue,
+          points: _latLngList
+        )},
         onMapCreated: (GoogleMapController controller) {
           _controller = controller;
+          print("init controller");
+          initPositionStream();
+
         },
       );
     });
@@ -165,29 +171,29 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   void initPositionStream() async {
-    _currentPosition = await Geolocator.getCurrentPosition();
+    print("pos stream");
+    _currentPosition = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
+    print("pos stream2");
     final currentLatLng =
         LatLng(_currentPosition.latitude, _currentPosition.longitude);
     _controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: currentLatLng, zoom: zoomLevel)));
-
     _positionStream = Geolocator.getPositionStream().listen((event) {
       // subscribe to location updates
+      print("pos stream3");
       final currentLatLng =
           LatLng(_currentPosition.latitude, _currentPosition.longitude);
       final newLatLng = LatLng(event.latitude, event.longitude);
       if (_isStart) {
-        _latLngList.add(newLatLng);
-        _speedList.add(event.speed);
         setState(() {
+          _latLngList.add(newLatLng);
+          print("hello $_latLngList");
+          _speedList.add(event.speed);
           _totalDistance += Geolocator.distanceBetween(currentLatLng.latitude,
               currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
+          print("hello $_totalDistance");
           _currentSpeed = event.speed.toStringAsFixed(2);
-          Polyline _newLine = Polyline(
-              polylineId: PolylineId(Uuid().v4()),
-              color: Colors.blue,
-              points: _latLngList);
-          _polylineSet.add(_newLine);
+
         });
       }
       _controller.animateCamera(
