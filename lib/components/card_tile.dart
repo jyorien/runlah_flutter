@@ -31,6 +31,7 @@ class CardTile extends StatelessWidget {
                 stepCount: stepCount,
                 timeTaken: timeTaken,
                 latLngList: listLatLng,
+                dateTime: dateTime,
                 uuid: uuid,
 
               ),

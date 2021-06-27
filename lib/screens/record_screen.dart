@@ -13,6 +13,7 @@ import 'package:runlah_flutter/constants.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:runlah_flutter/main.dart';
 import 'package:runlah_flutter/screens/result_screen.dart';
+import 'package:uuid/uuid.dart';
 
 import 'camera_screen.dart';
 
@@ -165,7 +166,6 @@ class _RecordScreenState extends State<RecordScreen> {
 
   void initPositionStream() async {
     _currentPosition = await Geolocator.getCurrentPosition();
-    print(_currentPosition);
     final currentLatLng =
         LatLng(_currentPosition.latitude, _currentPosition.longitude);
     _controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -184,7 +184,7 @@ class _RecordScreenState extends State<RecordScreen> {
               currentLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
           _currentSpeed = event.speed.toStringAsFixed(2);
           Polyline _newLine = Polyline(
-              polylineId: PolylineId(event.timestamp.toString()),
+              polylineId: PolylineId(Uuid().v4()),
               color: Colors.blue,
               points: _latLngList);
           _polylineSet.add(_newLine);

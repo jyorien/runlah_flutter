@@ -57,44 +57,51 @@ class _ResultScreenState extends State<ResultScreen> {
     double sessionDistance = widget.sessionDistance;
     return Scaffold(
       body: SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-        children: [
-          Container(
-            child: GoogleMap(
-              initialCameraPosition:
+          child: Column(
+            children: [
+              Container(
+                child: GoogleMap(
+                  initialCameraPosition:
                   CameraPosition(target: latLngList.last, zoom: zoomLevel),
-              mapType: MapType.normal,
-              markers: {
-                Marker(markerId: MarkerId("start"), position: latLngList.first),
-                Marker(markerId: MarkerId("end"), position: latLngList.last),
-              },
-              polylines: {
-                Polyline(
-                    polylineId: PolylineId("record_line"),
-                    points: latLngList,
-                    color: Colors.blue)
-              },
-            ),
-            height: 400,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          RecordStats(
-              sessionDistance: formatDistance(sessionDistance),
-              averageSpeed: averageSpeed.toStringAsFixed(2),
-              stepCount: stepCount.toString(),
-              timeTaken: timeTaken),
-          SizedBox(height: 10,),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            foregroundDecoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill,image: FileImage(File(widget.imagePath)))),
-          )
+                  mapType: MapType.normal,
+                  markers: {
+                    Marker(markerId: MarkerId("start"), position: latLngList.first),
+                    Marker(markerId: MarkerId("end"), position: latLngList.last),
+                  },
+                  polylines: {
+                    Polyline(
+                        polylineId: PolylineId("record_line"),
+                        points: latLngList,
+                        color: Colors.blue)
+                  },
+                ),
+                height: 400,
+              ),
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+        children: [
+
+                SizedBox(
+                  height: 10,
+                ),
+                RecordStats(
+                    sessionDistance: formatDistance(sessionDistance),
+                    averageSpeed: averageSpeed.toStringAsFixed(2),
+                    stepCount: stepCount.toString(),
+                    timeTaken: timeTaken),
+                SizedBox(height: 10,),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  foregroundDecoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill,image: FileImage(File(widget.imagePath)))),
+                )
 
         ],
-      )),
+      ),
+              ),
+            ],
+          )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.arrow_forward_ios),
         onPressed: () {
