@@ -4,13 +4,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 final kInputDecoration = InputDecoration(
     hintText: 'Email',
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(30)),
+      borderRadius: BorderRadius.all(Radius.circular(20)),
     ),
     enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
         borderSide: BorderSide(color: Colors.deepPurple, width: 1)),
     focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
         borderSide: BorderSide(color: Colors.deepPurple, width: 2)));
 
 final kWelcomeTextStyle = TextStyle(fontSize: 50);

@@ -15,6 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   FirebaseAuth _auth;
   String email;
   String password;
+  String cfmPassword;
   @override
   void initState() {
     // TODO: implement initState
@@ -44,6 +45,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: kInputDecoration.copyWith(hintText: 'Password'),
               onChanged: (value) => password = value,
             ),
+            SizedBox(height: 20),
+            TextField(
+              obscureText: true,
+              decoration: kInputDecoration.copyWith(hintText: 'Confirm Password'),
+              onChanged: (value) => cfmPassword = value,
+            ),
             SizedBox(
               height: 20,
             ),
@@ -51,11 +58,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
               text: 'Sign Up',
               onPressed: () async {
                 try {
+                  if (password != cfmPassword) {
+                    final snackBar = SnackBar(content: Text("Passwords do not match"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
+                  if (password.length < 6 || cfmPassword.length < 6) {
+                    final snackBar = SnackBar(content: Text("Password must have 6 or more characters"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
+
                   final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
                   if (newUser != null) {
                     Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id, (route) => false);
                   }
-                }  catch (e) {
+                }  on FirebaseAuthException catch (e) {
                   final snackBar = SnackBar(content: Text(e.toString()));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 

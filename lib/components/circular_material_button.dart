@@ -7,7 +7,7 @@ class CircularMaterialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 3,
-      borderRadius: BorderRadius.all(Radius.circular(30)),
+      borderRadius: BorderRadius.all(Radius.circular(20)),
       color: Colors.deepPurpleAccent,
       child: MaterialButton(
         minWidth: 200,
