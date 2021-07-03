@@ -58,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               text: 'Sign Up',
               onPressed: () async {
                 try {
-                  if (password != cfmPassword) {
+                  if (password.compareTo(cfmPassword) != 0 ) {
                     final snackBar = SnackBar(content: Text("Passwords do not match"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     return;

@@ -135,7 +135,10 @@ class _TodayScreenState extends State<TodayScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(child: Center(child: Text(_tipOfDay ?? "Stay hydrated!", style: kTodayTextStyle))),
+                Flexible(child: Center(child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(_tipOfDay ?? "Stay hydrated!", style: kTodayTextStyle),
+                ))),
               ],
             ),
           ),
