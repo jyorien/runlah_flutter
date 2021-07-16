@@ -16,8 +16,10 @@ dependencies:
   # self-added dependencies
   firebase_core: ^1.1.0
   firebase_auth: ^1.1.2
+  google_sign_in: ^5.0.4
   cloud_firestore: ^2.0.0
   google_maps_flutter: ^2.0.3
+  font_awesome_flutter: ^9.1.0
   geolocator: ^7.2.0+1
   pedometer: ^3.0.0
   permission_handler: ^7.1.0

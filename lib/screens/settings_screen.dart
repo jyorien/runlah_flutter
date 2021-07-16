@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:runlah_flutter/providers/DarkThemePreferences.dart';
 import 'package:runlah_flutter/screens/login_screen.dart';
@@ -36,8 +37,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
               ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     FirebaseAuth auth = FirebaseAuth.instance;
+                    await GoogleSignIn().signOut();
                     auth.signOut();
                     Navigator.pushNamedAndRemoveUntil(
                         context, LoginScreen.id, (route) => false);

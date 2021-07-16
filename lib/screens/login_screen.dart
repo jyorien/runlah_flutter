@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:runlah_flutter/components/circular_material_button.dart';
 import 'package:runlah_flutter/constants.dart';
 import 'package:runlah_flutter/screens/bottmnav_screen.dart';
@@ -20,6 +22,23 @@ class _LoginScreenState extends State<LoginScreen> {
   String email;
   String password;
   bool isLandscape;
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
   @override
   void initState() {
     super.initState();
@@ -77,6 +96,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
 
+              },),
+              SizedBox(height: 20,),
+              ElevatedButton.icon(style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                onPrimary: Colors.black,
+                minimumSize: Size(double.infinity, 50),
+              ),
+              icon: FaIcon(FontAwesomeIcons.google, color: Colors.red,),
+              label: Text("Sign In With Google"),
+              onPressed: ()async {
+                // signInWithGoogle();
+                // Trigger the authentication flow
+                final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+                // Obtain the auth details from the request
+                final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+                // Create a new credential
+                final credential = GoogleAuthProvider.credential(
+                  accessToken: googleAuth.accessToken,
+                  idToken: googleAuth.idToken,
+                );
+
+                // Once signed in, return the UserCredential
+                await FirebaseAuth.instance.signInWithCredential(credential);
+                Navigator.pushNamedAndRemoveUntil(context, BottomNavigationScreen.id, (route) => false);
               },),
               SizedBox(height: 20,),
               GestureDetector(
